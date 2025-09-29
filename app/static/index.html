@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Crypto Bot — All-in-One</title>
     <link rel="stylesheet" href="/static/styles.css">
-    <!-- Supabase & Charts via CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/lightweight-charts@4.2.0/dist/lightweight-charts.standalone.production.js"></script>
     <script src="/config.js"></script>
@@ -30,15 +29,16 @@
           <div class="row">
             <label>Coppia</label><input id="pair" value="BTC/USDT">
             <label>Timeframe</label>
-            <select id="tf">
-              <option>1m</option><option>5m</option><option>15m</option>
-              <option>1h</option><option>4h</option><option>1d</option>
-            </select>
+            <select id="tf"><option>1m</option><option>5m</option><option>15m</option><option>1h</option><option>4h</option><option>1d</option></select>
             <label>EMA vel.</label><input id="emaF" type="number" value="20">
             <label>EMA len.</label><input id="emaS" type="number" value="50">
             <label>SL %</label><input id="sl" type="number" value="2">
             <label>TP %</label><input id="tp" type="number" value="4">
+            <label>Simulazione</label><input id="simOn" type="checkbox" checked>
+            <label>Fee</label><input id="fee" type="number" step="0.0001" value="0.001">
+            <label>Capitale EUR</label><input id="start" type="number" value="1000">
             <label>Candele</label><input id="candles" type="number" value="300">
+            <button id="btn-reset" title="Reset simulazione">Reset</button>
             <button id="btn-logout" class="right">Logout</button>
           </div>
         </div>

@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends, HTTPException, Response
+from fastapi import FastAPI, Depends, HTTPException
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse, PlainTextResponse
 import httpx, os
@@ -9,15 +9,13 @@ from .crypto import encrypt_text, decrypt_text
 from .models import KeysIn, KeysStatus, OrderBuyQuote, OrderSellAll
 from .binance_client import make_binance, split_symbol
 
-app = FastAPI(title="CryptoBot All-in-One", version="0.1.0")
+app = FastAPI(title="CryptoBot All-in-One", version="0.1.1")
 
-# Serve static assets
 static_dir = os.path.join(os.path.dirname(__file__), "static")
 app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
 @app.get("/config.js", response_class=PlainTextResponse)
 async def config_js():
-    # Expose only PUBLIC runtime info
     js = f"""window.APP_CONFIG = {{
   SUPABASE_URL: {settings.supabase_url!r},
   SUPABASE_ANON_KEY: {settings.supabase_anon_key!r},
@@ -28,15 +26,13 @@ async def config_js():
 
 @app.get("/", response_class=HTMLResponse)
 async def index():
-    index_path = os.path.join(static_dir, "index.html")
-    with open(index_path, "r", encoding="utf-8") as f:
+    with open(os.path.join(static_dir, "index.html"), "r", encoding="utf-8") as f:
         return HTMLResponse(f.read())
 
 @app.get("/health")
 async def health():
     return {"ok": True}
 
-# ---------- Keys management ----------
 @app.get("/keys", response_model=KeysStatus)
 async def keys_status(user=Depends(verify_token)):
     uid = user.get("sub")
@@ -62,7 +58,6 @@ def _load_keys(uid: str):
         raise HTTPException(status_code=400, detail="API keys not set")
     return decrypt_text(data["api_key"]), decrypt_text(data["api_secret"])
 
-# ---------- Proxies / Trading ----------
 @app.get("/ohlcv")
 async def proxy_ohlcv(symbol: str, interval: str = "1m", limit: int = 500):
     url = "https://api.binance.com/api/v3/klines"
@@ -85,8 +80,8 @@ async def order_buy_quote(payload: OrderBuyQuote, user=Depends(verify_token)):
     uid = user.get("sub")
     api_key, api_secret = _load_keys(uid)
     ex = make_binance(api_key, api_secret, payload.testnet if payload.testnet is not None else settings.binance_testnet_default)
-    quote_ccy = split_symbol(payload.symbol)[1]
-    params = {"quoteOrderQty": ex.currency_to_precision(quote_ccy, payload.quote_amount)}
+    base, quote = split_symbol(payload.symbol)
+    params = {"quoteOrderQty": ex.currency_to_precision(quote, payload.quote_amount)}
     try:
         o = ex.create_order(symbol=payload.symbol, type="market", side="buy", amount=None, price=None, params=params)
         return {"order": o}

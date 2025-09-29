@@ -25,6 +25,14 @@ async def verify_token(credentials: HTTPAuthorizationCredentials = Depends(beare
     token = credentials.credentials
     try:
         headers = jwt.get_unverified_header(token)
+        alg = headers.get("alg", "HS256")
+
+        # Prefer HS256 using SUPABASE_JWT_SECRET (default for Supabase)
+        if alg.startswith("HS") and settings.supabase_jwt_secret:
+            claims = jwt.decode(token, settings.supabase_jwt_secret, algorithms=[alg], options={"verify_aud": False})
+            return claims
+
+        # Otherwise fall back to JWKS (RS256/EdDSA)
         kid = headers.get("kid")
         keys = await get_jwks()
         key = next((k for k in keys if k.get("kid")==kid), None)
@@ -41,5 +49,5 @@ async def verify_token(credentials: HTTPAuthorizationCredentials = Depends(beare
         return claims
     except HTTPException:
         raise
-    except Exception:
+    except Exception as e:
         raise HTTPException(status_code=401, detail="Invalid token")

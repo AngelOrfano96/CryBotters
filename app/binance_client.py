@@ -10,7 +10,7 @@ def make_binance(api_key:str, api_secret:str, testnet:bool=True):
     return ex
 
 def split_symbol(symbol: str):
-    s = symbol.replace('/', '').upper()
+    s = symbol.replace('/', '').toUpperCase() if hasattr(str, 'toUpperCase') else symbol.replace('/', '').upper()
     for q in ('USDT','BUSD','EUR','USD','BTC','ETH'):
         if s.endswith(q):
             return s[:-len(q)], q
