@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Crypto Bot — All-in-One</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <!-- Supabase & Charts via CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lightweight-charts@4.2.0/dist/lightweight-charts.standalone.production.js"></script>
+    <script src="/config.js"></script>
+  </head>
+  <body>
+    <div id="app">
+      <div class="topbar">
+        <div class="title">Crypto Bot — All-in-One</div>
+        <div id="status"></div>
+      </div>
+
+      <div id="auth" class="panel center">
+        <h2>Login / Sign up</h2>
+        <input id="email" type="email" placeholder="email" />
+        <input id="password" type="password" placeholder="password" />
+        <button id="btn-login">Entra</button>
+        <div class="hint">Se non esisti, ti registriamo automaticamente.</div>
+      </div>
+
+      <div id="app-ui" class="hidden">
+        <div class="controls panel">
+          <div class="row">
+            <label>Coppia</label><input id="pair" value="BTC/USDT">
+            <label>Timeframe</label>
+            <select id="tf">
+              <option>1m</option><option>5m</option><option>15m</option>
+              <option>1h</option><option>4h</option><option>1d</option>
+            </select>
+            <label>EMA vel.</label><input id="emaF" type="number" value="20">
+            <label>EMA len.</label><input id="emaS" type="number" value="50">
+            <label>SL %</label><input id="sl" type="number" value="2">
+            <label>TP %</label><input id="tp" type="number" value="4">
+            <label>Candele</label><input id="candles" type="number" value="300">
+            <button id="btn-logout" class="right">Logout</button>
+          </div>
+        </div>
+
+        <div class="grid">
+          <div class="panel" style="grid-column:1/-1">
+            <div class="row"><div class="h2">Prezzo (candele) + EMA</div>
+              <div class="right small">Equity: <span id="equity">0.00</span> | P&L: <span id="pnl">0.00</span> € | ROI: <span id="roi">0.00</span> %</div>
+            </div>
+            <div id="chart" class="chart"></div>
+          </div>
+
+          <div class="panel" style="grid-column:1/-1">
+            <div class="row">
+              <button id="btn-keys">Salva chiavi (Binance)</button>
+              <input id="api_key" placeholder="API Key">
+              <input id="api_secret" placeholder="API Secret" type="password">
+              <button id="btn-buy">BUY €25 (testnet)</button>
+              <button id="btn-sell">SELL ALL (testnet)</button>
+              <div id="keys-status" class="small right"></div>
+            </div>
+          </div>
+
+          <div class="panel" style="grid-column:1/-1">
+            <div class="h2">Storico</div>
+            <table class="table" id="history">
+              <thead>
+                <tr><th>Tempo</th><th>Side</th><th>Prezzo</th><th>Qty</th><th>Equity</th><th>Motivo</th></tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="/static/app.js"></script>
+  </body>
+</html>
